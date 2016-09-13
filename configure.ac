@@ -97,6 +97,15 @@ AS_IF([test "x$enable_git_receiver" = "xyes"], [
 ])
 AM_CONDITIONAL([BUILD_GIT_RECEIVER], [test "x$have_git_receiver" = "xyes"])
 
+NINJA="disabled"
+AC_ARG_ENABLE([ninja], AS_HELP_STRING([--enable-ninja],
+              [build blogc-ninja tool]))
+AS_IF([test "x$enable_ninja" = "xyes"], [
+  NINJA="enabled"
+  have_ninja=yes
+])
+AM_CONDITIONAL([BUILD_NINJA], [test "x$have_ninja" = "xyes"])
+
 RUNSERVER="disabled"
 AC_ARG_ENABLE([runserver], AS_HELP_STRING([--enable-runserver],
               [build blogc-runserver tool]))
@@ -219,6 +228,7 @@ AS_ECHO("
         ldflags:             ${LDFLAGS}
 
         blogc-git-receiver:  ${GIT_RECEIVER}
+        blogc-ninja:         ${NINJA}
         blogc-runserver:     ${RUNSERVER}
 
         tests:               ${TESTS}

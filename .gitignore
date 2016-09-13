@@ -49,6 +49,7 @@ blogc*.html
 # binaries
 /blogc
 /blogc-git-receiver
+/blogc-ninja
 /blogc-runserver
 
 # tests

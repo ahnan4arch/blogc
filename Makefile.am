@@ -81,6 +81,12 @@ noinst_LTLIBRARIES += \
 	$(NULL)
 endif
 
+if BUILD_NINJA
+bin_PROGRAMS += \
+	blogc-ninja \
+	$(NULL)
+endif
+
 if BUILD_RUNSERVER
 bin_PROGRAMS += \
 	blogc-runserver \
@@ -172,6 +178,21 @@ libblogc_git_receiver_la_CFLAGS = \
 	$(NULL)
 
 libblogc_git_receiver_la_LIBADD = \
+	$(NULL)
+endif
+
+
+if BUILD_NINJA
+blogc_ninja_SOURCES = \
+	src/blogc-ninja/main.c \
+	$(NULL)
+
+blogc_ninja_CFLAGS = \
+	$(AM_CFLAGS) \
+	$(NULL)
+
+blogc_ninja_LDADD = \
+	libblogc_common.la \
 	$(NULL)
 endif
 
