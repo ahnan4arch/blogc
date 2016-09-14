@@ -225,6 +225,17 @@ bc_config_get(bc_config_t *config, const char *section, const char *key)
 }
 
 
+const char*
+bc_config_get_with_default(bc_config_t *config, const char *section, const char *key,
+    const char *default_)
+{
+    const char *rv = bc_config_get(config, section, key);
+    if (rv == NULL)
+        return default_;
+    return rv;
+}
+
+
 void
 bc_config_free(bc_config_t *config)
 {

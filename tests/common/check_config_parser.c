@@ -29,6 +29,7 @@ test_config_empty(void **state)
     assert_non_null(c);
     assert_non_null(c->root);
     assert_int_equal(bc_trie_size(c->root), 0);
+    assert_string_equal(bc_config_get_with_default(c, "bola", "foo", "bar"), "bar");
     bc_config_free(c);
 }
 

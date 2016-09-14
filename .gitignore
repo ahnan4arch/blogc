@@ -68,6 +68,7 @@ blogc*.html
 /tests/blogc-git-receiver/check_shell.sh
 /tests/blogc-runserver/check_httpd_utils
 /tests/blogc-runserver/check_mime
+/tests/blogc-ninja/check_settings
 /tests/common/check_config_parser
 /tests/common/check_error
 /tests/common/check_stdin

@@ -85,6 +85,10 @@ if BUILD_NINJA
 bin_PROGRAMS += \
 	blogc-ninja \
 	$(NULL)
+
+noinst_LTLIBRARIES += \
+	libblogc_ninja.la \
+	$(NULL)
 endif
 
 if BUILD_RUNSERVER
@@ -192,7 +196,16 @@ blogc_ninja_CFLAGS = \
 	$(NULL)
 
 blogc_ninja_LDADD = \
+	libblogc_ninja.la \
 	libblogc_common.la \
+	$(NULL)
+
+libblogc_ninja_la_SOURCES = \
+	src/blogc-ninja/settings.c \
+	$(NULL)
+
+libblogc_ninja_la_CFLAGS = \
+	$(AM_CFLAGS) \
 	$(NULL)
 endif
 
@@ -673,6 +686,30 @@ tests_blogc_git_receiver_check_shell_command_parser_LDFLAGS = \
 tests_blogc_git_receiver_check_shell_command_parser_LDADD = \
 	$(CMOCKA_LIBS) \
 	libblogc_git_receiver.la \
+	libblogc_common.la \
+	$(NULL)
+endif
+
+if BUILD_NINJA
+check_PROGRAMS += \
+	tests/blogc-ninja/check_settings \
+	$(NULL)
+
+tests_blogc_ninja_check_settings_SOURCES = \
+	tests/blogc-ninja/check_settings.c \
+	$(NULL)
+
+tests_blogc_ninja_check_settings_CFLAGS = \
+	$(CMOCKA_CFLAGS) \
+	$(NULL)
+
+tests_blogc_ninja_check_settings_LDFLAGS = \
+	-no-install \
+	$(NULL)
+
+tests_blogc_ninja_check_settings_LDADD = \
+	$(CMOCKA_LIBS) \
+	libblogc_ninja.la \
 	libblogc_common.la \
 	$(NULL)
 endif
