@@ -10,6 +10,7 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "../common/error.h"
@@ -77,7 +78,7 @@ main(int argc, char **argv)
     const char *f = settings_file ? settings_file : "settings.ini";
 
     size_t content_len;
-    char *content = bc_file_get_contents(f, &content_len, &err);
+    char *content = bc_file_get_contents(f, true, &content_len, &err);
     if (err != NULL) {
         bc_error_print(err, "blogc-ninja");
         rv = 2;
