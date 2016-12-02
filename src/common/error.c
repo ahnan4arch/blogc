@@ -130,6 +130,9 @@ bc_error_print(bc_error_t *err, const char *prefix)
         case BLOGC_WARNING_DATETIME_PARSER:
             fprintf(stderr, "warning: datetime: %s\n", err->msg);
             break;
+        case BLOGC_NINJA_ERROR_SETTINGS:
+            fprintf(stderr, "error: settings: %s\n", err->msg);
+            break;
         default:
             fprintf(stderr, "error: %s\n", err->msg);
     }

@@ -23,6 +23,9 @@ typedef enum {
     BLOGC_ERROR_TEMPLATE_PARSER,
     BLOGC_ERROR_LOADER,
     BLOGC_WARNING_DATETIME_PARSER,
+
+    // errors for src/blogc-ninja
+    BLOGC_NINJA_ERROR_SETTINGS = 200,
 } bc_error_type_t;
 
 typedef struct {

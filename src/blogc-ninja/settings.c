@@ -13,6 +13,29 @@
 #include "settings.h"
 
 
+static const struct default_settings_map {
+    const char *key;
+    const char *default_value;
+} default_settings[] = {
+    {"output_dir", "_build"},
+    {"content_dir", "content"},
+    {"assets_dir", "assets"},
+    {"template_dir", "templates"},
+    {"main_template", "main.tmpl"},
+    {"locale", NULL},
+    {NULL, NULL},
+};
+
+
+static const char* required_environment[] = {
+    "AUTHOR_NAME",
+    "AUTHOR_EMAIL",
+    "SITE_TITLE",
+    "SITE_TAGLINE",
+    NULL,
+};
+
+
 blogc_ninja_settings_t*
 blogc_ninja_settings_parse(const char *content, size_t content_len,
     bc_error_t **err)
@@ -41,29 +64,29 @@ blogc_ninja_settings_parse(const char *content, size_t content_len,
     }
     bc_strv_free(env);
 
-    bc_trie_insert(rv->settings, "output_dir", bc_strdup(
-        bc_config_get_with_default(
-            config, "settings", "output_dir", "_build")));
+    for (size_t i = 0; required_environment[i] != NULL; i++) {
+        const char *value = bc_trie_lookup(rv->env, required_environment[i]);
+        if (value == NULL || value[0] == '\0') {
+            *err = bc_error_new_printf(BLOGC_NINJA_ERROR_SETTINGS,
+                "[environment] key required but not found or empty: %s",
+                required_environment[i]);
+            blogc_ninja_settings_free(rv);
+            rv = NULL;
+            goto cleanup;
+        }
+    }
 
-    bc_trie_insert(rv->settings, "content_dir", bc_strdup(
-        bc_config_get_with_default(
-            config, "settings", "content_dir", "content")));
+    for (size_t i = 0; default_settings[i].key != NULL; i++) {
+        const char *value = bc_config_get_with_default(
+            config, "settings", default_settings[i].key,
+            default_settings[i].default_value);
+        if (value != NULL) {
+            bc_trie_insert(rv->settings, default_settings[i].key,
+                bc_strdup(value));
+        }
+    }
 
-    bc_trie_insert(rv->settings, "assets_dir", bc_strdup(
-        bc_config_get_with_default(
-            config, "settings", "assets_dir", "assets")));
-
-    bc_trie_insert(rv->settings, "templates_dir", bc_strdup(
-        bc_config_get_with_default(
-            config, "settings", "templates_dir", "templates")));
-
-    bc_trie_insert(rv->settings, "main_template", bc_strdup(
-        bc_config_get_with_default(
-            config, "settings", "main_template", "main.tmpl")));
-
-    bc_trie_insert(rv->settings, "atom_template", bc_strdup(
-        bc_config_get_with_default(
-            config, "settings", "atom_template", "atom.tmpl")));
+cleanup:
 
     bc_config_free(config);
 

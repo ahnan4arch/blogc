@@ -25,17 +25,12 @@ test_settings_empty(void **state)
     const char *a = "";
     bc_error_t *err = NULL;
     blogc_ninja_settings_t *s = blogc_ninja_settings_parse(a, strlen(a), &err);
-    assert_null(err);
-    assert_non_null(s);
-    assert_int_equal(bc_trie_size(s->env), 0);
-    assert_int_equal(bc_trie_size(s->settings), 6);
-    assert_string_equal(bc_trie_lookup(s->settings, "output_dir"), "_build");
-    assert_string_equal(bc_trie_lookup(s->settings, "content_dir"), "content");
-    assert_string_equal(bc_trie_lookup(s->settings, "assets_dir"), "assets");
-    assert_string_equal(bc_trie_lookup(s->settings, "templates_dir"), "templates");
-    assert_string_equal(bc_trie_lookup(s->settings, "main_template"), "main.tmpl");
-    assert_string_equal(bc_trie_lookup(s->settings, "atom_template"), "atom.tmpl");
-    blogc_ninja_settings_free(s);
+    assert_non_null(err);
+    assert_null(s);
+    assert_int_equal(err->type, BLOGC_NINJA_ERROR_SETTINGS);
+    assert_string_equal(err->msg,
+        "[environment] key required but not found or empty: AUTHOR_NAME");
+    bc_error_free(err);
 }
 
 
@@ -47,27 +42,56 @@ test_settings(void **state)
         "output_dir = bola\n"
         "content_dir = guda\n"
         "assets_dir = chunda\n"
-        "templates_dir = lol\n"
         "main_template = foo.tmpl\n"
-        "atom_template = bar.tmpl\n"
         "\n"
         "[environment]\n"
         "BOLA = asd\n"
         "GUDA = qwe\n";
     bc_error_t *err = NULL;
     blogc_ninja_settings_t *s = blogc_ninja_settings_parse(a, strlen(a), &err);
+    assert_non_null(err);
+    assert_null(s);
+    assert_int_equal(err->type, BLOGC_NINJA_ERROR_SETTINGS);
+    assert_string_equal(err->msg,
+        "[environment] key required but not found or empty: AUTHOR_NAME");
+    bc_error_free(err);
+}
+
+
+static void
+test_settings2(void **state)
+{
+    const char *a =
+        "[settings]\n"
+        "output_dir = bola\n"
+        "content_dir = guda\n"
+        "assets_dir = chunda\n"
+        "main_template = foo.tmpl\n"
+        "\n"
+        "[environment]\n"
+        "BOLA = asd\n"
+        "GUDA = qwe\n"
+        "AUTHOR_NAME = chunda\n"
+        "AUTHOR_EMAIL = chunda@example.com\n"
+        "SITE_TITLE = Fuuuuuuuuu\n"
+        "SITE_TAGLINE = My cool tagline\n";
+    bc_error_t *err = NULL;
+    blogc_ninja_settings_t *s = blogc_ninja_settings_parse(a, strlen(a), &err);
     assert_null(err);
     assert_non_null(s);
-    assert_int_equal(bc_trie_size(s->env), 2);
+    assert_int_equal(bc_trie_size(s->env), 6);
     assert_string_equal(bc_trie_lookup(s->env, "BOLA"), "asd");
     assert_string_equal(bc_trie_lookup(s->env, "GUDA"), "qwe");
-    assert_int_equal(bc_trie_size(s->settings), 6);
+    assert_string_equal(bc_trie_lookup(s->env, "AUTHOR_NAME"), "chunda");
+    assert_string_equal(bc_trie_lookup(s->env, "AUTHOR_EMAIL"), "chunda@example.com");
+    assert_string_equal(bc_trie_lookup(s->env, "SITE_TITLE"), "Fuuuuuuuuu");
+    assert_string_equal(bc_trie_lookup(s->env, "SITE_TAGLINE"), "My cool tagline");
+    assert_int_equal(bc_trie_size(s->settings), 5);
     assert_string_equal(bc_trie_lookup(s->settings, "output_dir"), "bola");
     assert_string_equal(bc_trie_lookup(s->settings, "content_dir"), "guda");
     assert_string_equal(bc_trie_lookup(s->settings, "assets_dir"), "chunda");
-    assert_string_equal(bc_trie_lookup(s->settings, "templates_dir"), "lol");
+    assert_string_equal(bc_trie_lookup(s->settings, "template_dir"), "templates");
     assert_string_equal(bc_trie_lookup(s->settings, "main_template"), "foo.tmpl");
-    assert_string_equal(bc_trie_lookup(s->settings, "atom_template"), "bar.tmpl");
     blogc_ninja_settings_free(s);
 }
 
@@ -78,6 +102,7 @@ main(void)
     const UnitTest tests[] = {
         unit_test(test_settings_empty),
         unit_test(test_settings),
+        unit_test(test_settings2),
     };
     return run_tests(tests);
 }
