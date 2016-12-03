@@ -16,6 +16,7 @@
 #include "../common/error.h"
 #include "../common/file.h"
 #include "../common/utils.h"
+#include "renderer.h"
 #include "settings.h"
 
 
@@ -24,20 +25,21 @@ print_help(void)
 {
     printf(
         "usage:\n"
-        "    blogc-ninja [-h] [-v] [-f FILE]\n"
+        "    blogc-ninja [-h] [-v] [-f FILE] [-o FILE]\n"
         "                - A simple build tool for blogc.\n"
         "\n"
         "optional arguments:\n"
         "    -h            show this help message and exit\n"
         "    -v            show version and exit\n"
-        "    -f FILE       settings file (default: settings.ini)\n");
+        "    -f FILE       settings file (default: settings.ini)\n"
+        "    -o FILE       output file (default: build.ninja)\n");
 }
 
 
 static void
 print_usage(void)
 {
-    printf("usage: blogc-ninja [-h] [-v] [-f FILE]\n");
+    printf("usage: blogc-ninja [-h] [-v] [-f FILE] [-o FILE]\n");
 }
 
 
@@ -48,6 +50,7 @@ main(int argc, char **argv)
     bc_error_t *err = NULL;
 
     char *settings_file = NULL;
+    char *output_file = NULL;
     blogc_ninja_settings_t *settings = NULL;
 
     for (unsigned int i = 1; i < argc; i++) {
@@ -65,6 +68,12 @@ main(int argc, char **argv)
                     else if (i + 1 < argc)
                         settings_file = bc_strdup(argv[++i]);
                     break;
+                case 'o':
+                    if (argv[i][2] != '\0')
+                        output_file = bc_strdup(argv[i] + 2);
+                    else if (i + 1 < argc)
+                        output_file = bc_strdup(argv[++i]);
+                    break;
                 default:
                     print_usage();
                     fprintf(stderr, "blogc-ninja: error: invalid argument: "
@@ -76,6 +85,7 @@ main(int argc, char **argv)
     }
 
     const char *f = settings_file ? settings_file : "settings.ini";
+    const char *o = output_file ? output_file : "build.ninja";
 
     size_t content_len;
     char *content = bc_file_get_contents(f, true, &content_len, &err);
@@ -93,11 +103,14 @@ main(int argc, char **argv)
         goto cleanup;
     }
 
-    printf("%s", content);
+    char *output = blogc_ninja_render(settings);
+
+    printf("%s", output);
 
 cleanup:
 
     free(settings_file);
+    free(output_file);
     blogc_ninja_settings_free(settings);
     bc_error_free(err);
 

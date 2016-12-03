@@ -22,6 +22,7 @@ static const struct default_settings_map {
     {"assets_dir", "assets"},
     {"template_dir", "templates"},
     {"main_template", "main.tmpl"},
+    {"date_format", "%b %d, %Y, %I:%M %p GMT"},
     {"locale", NULL},
     {NULL, NULL},
 };

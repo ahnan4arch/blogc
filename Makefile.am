@@ -48,6 +48,8 @@ noinst_HEADERS = \
 	src/blogc-git-receiver/pre-receive-parser.h \
 	src/blogc-git-receiver/shell.h \
 	src/blogc-git-receiver/shell-command-parser.h \
+	src/blogc-ninja/renderer.h \
+	src/blogc-ninja/settings.h \
 	src/blogc-runserver/httpd.h \
 	src/blogc-runserver/httpd-utils.h \
 	src/blogc-runserver/mime.h \
@@ -201,6 +203,7 @@ blogc_ninja_LDADD = \
 	$(NULL)
 
 libblogc_ninja_la_SOURCES = \
+	src/blogc-ninja/renderer.c \
 	src/blogc-ninja/settings.c \
 	$(NULL)
 
