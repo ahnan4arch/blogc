@@ -108,6 +108,7 @@ AS_IF([test "x$enable_runserver" = "xyes"], [
     AC_MSG_ERROR([blogc-runserver tool requested but pthread is not supported])
   ])
   RUNSERVER="enabled"
+  have_threads=yes
   have_runserver=yes
 ])
 AM_CONDITIONAL([BUILD_RUNSERVER], [test "x$have_runserver" = "xyes"])
@@ -187,6 +188,8 @@ AM_CONDITIONAL([USE_CMOCKA], [test "x$have_cmocka" = "xyes"])
 AM_CONDITIONAL([USE_BGR_DEPS], [test "x$have_bgr_deps" = "xyes"])
 BASH="$ac_cv_path_bash"
 AC_SUBST(BASH)
+
+AM_CONDITIONAL([USE_THREADS], [test "x$have_threads" = "xyes"])
 
 AC_CHECK_HEADERS([sys/stat.h time.h])
 
